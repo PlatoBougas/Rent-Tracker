@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rowe Split — Rent &amp; Utilities Ledger</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.3/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
+<style>
+  :root{
+    --md-primary:#1a73e8;
+    --md-primary-dark:#174ea6;
+    --md-primary-container:#e8f0fe;
+    --md-on-primary-container:#0b3d91;
+    --md-surface:#ffffff;
+    --md-surface-alt:#f6f8fc;
+    --md-bg:#f0f2f6;
+    --md-outline:#dadce0;
+    --md-outline-soft:#e8eaed;
+    --md-text:#202124;
+    --md-text-secondary:#5f6368;
+    --md-plato:#1a73e8;
+    --md-plato-container:#e8f0fe;
+    --md-zong:#9334e6;
+    --md-zong-container:#f3e8fd;
+    --md-success:#188038;
+    --md-success-container:#e6f4ea;
+    --md-warn:#b06000;
+    --md-warn-container:#fef7e0;
+    --md-rent:#1a73e8;
+    --md-utility:#188038;
+    --md-other:#5f6368;
+    --elev-1:0 1px 2px 0 rgba(60,64,67,.30), 0 1px 3px 1px rgba(60,64,67,.15);
+    --elev-2:0 1px 2px 0 rgba(60,64,67,.30), 0 2px 6px 2px rgba(60,64,67,.15);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:Roboto, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    background:var(--md-bg);
+    color:var(--md-text);
+    -webkit-font-smoothing:antialiased;
+  }
+  .gsans{font-family:Roboto, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; letter-spacing:-0.01em;}
+  .mono{font-family:"Roboto Mono", "SF Mono", Menlo, Consolas, monospace;}
+  ::selection{background:var(--md-primary-container);}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;}
+  input:focus, select:focus, textarea:focus, button:focus-visible{
+    outline:2px solid var(--md-primary);
+    outline-offset:1px;
+  }
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-thumb{background:#c4c7cc;border-radius:10px;}
+  .card{
+    background:var(--md-surface);
+    border:1px solid var(--md-outline-soft);
+    border-radius:16px;
+    box-shadow:var(--elev-1);
+  }
+  .btn{
+    border-radius:20px;
+    border:none;
+    font-weight:500;
+    font-size:14px;
+    padding:10px 20px;
+    transition:box-shadow .15s ease, background .15s ease, transform .1s ease;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn-filled{background:var(--md-primary);color:#fff;}
+  .btn-filled:hover{background:var(--md-primary-dark);box-shadow:var(--elev-1);}
+  .btn-tonal{background:var(--md-primary-container);color:var(--md-on-primary-container);}
+  .btn-tonal:hover{filter:brightness(0.97);}
+  .btn-outline{background:transparent;color:var(--md-text-secondary);border:1px solid var(--md-outline);}
+  .btn-outline:hover{background:var(--md-surface-alt);}
+  .btn-text{background:transparent;color:var(--md-primary);padding:8px 12px;}
+  .btn-text:hover{background:var(--md-primary-container);}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;
+    border-radius:8px;padding:4px 10px;font-size:12.5px;font-weight:500;
+    border:1px solid transparent;
+  }
+  .fade-in{animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+  .toggle{
+    position:relative;width:46px;height:26px;border-radius:999px;
+    background:var(--md-outline);transition:background .18s ease;border:none;flex-shrink:0;
+  }
+  .toggle.on{background:var(--md-success);}
+  .toggle .knob{
+    position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+    background:#fff;transition:left .18s ease;box-shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  .toggle.on .knob{left:23px;}
+  table{border-collapse:collapse;width:100%;}
+  td,th{padding:10px 8px;}
+  tbody tr{border-top:1px solid var(--md-outline-soft);}
+  input.cell{
+    width:100%;border:1px solid transparent;background:transparent;
+    border-radius:6px;padding:6px 8px;font-size:14px;color:var(--md-text);
+  }
+  input.cell:hover{background:var(--md-surface-alt);}
+  input.cell:focus{background:var(--md-surface-alt);border-color:var(--md-outline);outline:none;}
+  select.cell{
+    border:1px solid var(--md-outline-soft);background:var(--md-surface-alt);
+    border-radius:8px;padding:6px 8px;font-size:13px;color:var(--md-text);
+  }
+  .icon-btn{
+    width:32px;height:32px;border-radius:50%;border:none;background:transparent;
+    display:inline-flex;align-items:center;justify-content:center;color:var(--md-text-secondary);
+  }
+  .icon-btn:hover{background:var(--md-surface-alt);color:var(--md-text);}
+  .month-tab{
+    padding:9px 16px;border-radius:10px;font-size:14px;font-weight:500;
+    border:1px solid transparent;color:var(--md-text-secondary);white-space:nowrap;
+  }
+  .month-tab.active{background:var(--md-primary-container);color:var(--md-on-primary-container);}
+  .month-tab:hover:not(.active){background:var(--md-surface-alt);}
+  .progress-line{height:3px;border-radius:3px;background:var(--md-outline-soft);overflow:hidden;}
+  .progress-line > div{height:100%;background:var(--md-primary);}
+  textarea.notes{
+    width:100%;border:1px solid var(--md-outline-soft);border-radius:12px;padding:12px 14px;
+    font-size:14px;resize:vertical;min-height:72px;background:var(--md-surface-alt);color:var(--md-text);
+  }
+  .dropzone{
+    border:1.5px dashed var(--md-outline);border-radius:14px;padding:22px;text-align:center;
+    background:var(--md-surface-alt);transition:border-color .15s ease, background .15s ease;
+  }
+  .dropzone.drag{border-color:var(--md-primary);background:var(--md-primary-container);}
+  @media (max-width:860px){
+    .two-col{grid-template-columns:1fr !important;}
+    .sidebar{order:2;}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const {useState, useEffect, useRef, useMemo} = React;
+
+/* ---------------- Constants ---------------- */
+const RENT_SPLIT_PLATO = 51.5;
+const UTILITY_SPLIT_PLATO = 50;
+const OTHER_SPLIT_PLATO = 50;
+const STORAGE_KEY = "rowe-split-ledger-v1";
+const PORTAL_URL = "https://rowepearvillage.securecafe.com/residentservices/rowe-at-pear-village/userlogin.aspx";
+
+const CATEGORY_META = {
+  rent:    { label: "Base Rent",  color: "var(--md-rent)",    bg: "var(--md-primary-container)", defaultSplit: RENT_SPLIT_PLATO },
+  utility: { label: "Utility",    color: "var(--md-utility)", bg: "var(--md-success-container)", defaultSplit: UTILITY_SPLIT_PLATO },
+  other:   { label: "Other",      color: "var(--md-other)",   bg: "#eceff1",                      defaultSplit: OTHER_SPLIT_PLATO },
+};
+
+const uid = () => Math.random().toString(36).slice(2, 10);
+
+const fmt = (n) => {
+  const v = Number(n) || 0;
+  const sign = v < 0 ? "-" : "";
+  return sign + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+
+const monthLabel = (id) => {
+  const [y, m] = id.split("-").map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+};
+
+const todayMonthId = () => {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+};
+
+const shiftMonthId = (id, delta) => {
+  let [y, m] = id.split("-").map(Number);
+  m += delta;
+  while (m > 12) { m -= 12; y += 1; }
+  while (m < 1) { m += 12; y -= 1; }
+  return y + "-" + String(m).padStart(2, "0");
+};
+
+/* ---------------- Seed data (from the actual Sept/Oct 2026 resident portal statement) ---------------- */
+function seedData() {
+  const mkItem = (name, amount, category) => ({
+    id: uid(), name, amount, category, splitPlato: CATEGORY_META[category].defaultSplit,
+  });
+  return {
+    "2026-09": {
+      id: "2026-09",
+      lineItems: [
+        mkItem("Base Rent", 5801.00, "rent"),
+        mkItem("Garage Income", 75.00, "other"),
+        mkItem("Garage Income", 75.00, "other"),
+        mkItem("High Speed Internet Access", 1.17, "utility"),
+        mkItem("Trash Rebill - Door to Door", 25.00, "utility"),
+        mkItem("One-Time Concession", -5354.77, "rent"),
+      ],
+      notes: "Imported from the September resident portal statement — one-time concession applied to base rent.",
+      paid: { plato: false, zong: false },
+    },
+    "2026-10": {
+      id: "2026-10",
+      lineItems: [
+        mkItem("Base Rent", 5801.00, "rent"),
+        mkItem("Garage Income", 75.00, "other"),
+        mkItem("Garage Income", 75.00, "other"),
+        mkItem("Trash Rebill - Door to Door", 25.00, "utility"),
+      ],
+      notes: "",
+      paid: { plato: false, zong: false },
+    },
+  };
+}
+
+/* ---------------- Persistence ---------------- */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) { console.warn("Could not read saved ledger:", e); }
+  return { months: seedData(), roommates: { plato: "Plato", zong: "Zong" } };
+}
+function saveState(state) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch (e) { console.warn("Could not save ledger:", e); }
+}
+
+/* ---------------- OCR / paste parsing ---------------- */
+const EXCLUDE_LABELS = /^(charge|amount|charged on|current balance|total amount|total|subtotal|balance|pay now|set up auto-?pay|missing a payment)/i;
+
+function categorize(name) {
+  const n = name.toLowerCase();
+  if (n.includes("rent") || n.includes("concession")) return "rent";
+  if (/(trash|internet|water|electric|sewer|sewage|gas\b|utilit|cable|pest)/.test(n)) return "utility";
+  return "other";
+}
+
+function parseChargesFromText(text) {
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  const moneyRe = /-?\$?\s?-?[\d,]+\.\d{2}/g;
+  const items = [];
+  for (const line of lines) {
+    const matches = line.match(moneyRe);
+    if (!matches) continue;
+    const amountStr = matches[matches.length - 1].replace(/[\s$]/g, "");
+    const amount = parseFloat(amountStr.replace(/,/g, ""));
+    if (Number.isNaN(amount)) continue;
+    let label = line.replace(matches[matches.length - 1], "").trim();
+    label = label.replace(/[-–—]\s*$/, "").trim();
+    if (!label || EXCLUDE_LABELS.test(label)) continue;
+    if (EXCLUDE_LABELS.test(label.split(/\s{2,}/)[0])) continue;
+    items.push({ id: uid(), name: label, amount, category: categorize(label) });
+  }
+  return items.map((it) => ({ ...it, splitPlato: CATEGORY_META[it.category].defaultSplit }));
+}
+
+/* ---------------- Small UI atoms ---------------- */
+function Toggle({ on, onClick, label }) {
+  return (
+    <button className={"toggle" + (on ? " on" : "")} onClick={onClick} aria-pressed={on} aria-label={label} title={label}>
+      <span className="knob"></span>
+    </button>
+  );
+}
+
+function CategoryChip({ category }) {
+  const meta = CATEGORY_META[category];
+  return (
+    <span className="chip" style={{ background: meta.bg, color: meta.color }}>
+      {meta.label}
+    </span>
+  );
+}
+
+function IconBtn({ children, onClick, title }) {
+  return <button className="icon-btn" onClick={onClick} title={title} aria-label={title}>{children}</button>;
+}
+
+/* Simple inline SVG icons (no external icon font needed) */
+const Icon = {
+  trash: (p) => <svg {...p} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>,
+  plus: (p) => <svg {...p} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>,
+  upload: (p) => <svg {...p} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>,
+  link: (p) => <svg {...p} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.36-1.36"/></svg>,
+  chevDown: (p) => <svg {...p} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>,
+};
+
+/* ---------------- OCR Import Panel ---------------- */
+function ImportPanel({ onAddItems }) {
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState("image"); // image | paste
+  const [status, setStatus] = useState("");
+  const [progress, setProgress] = useState(0);
+  const [rawText, setRawText] = useState("");
+  const [parsed, setParsed] = useState(null);
+  const [drag, setDrag] = useState(false);
+  const fileInputRef = useRef(null);
+
+  async function runOCR(file) {
+    setStatus("Reading image…");
+    setProgress(0);
+    setParsed(null);
+    try {
+      const { data } = await Tesseract.recognize(file, "eng", {
+        logger: (m) => {
+          if (m.status === "recognizing text") setProgress(Math.round(m.progress * 100));
+          setStatus(m.status);
+        },
+      });
+      setRawText(data.text);
+      const items = parseChargesFromText(data.text);
+      setParsed(items);
+      setStatus(items.length ? "" : "Couldn't confidently detect line items — review the extracted text below.");
+    } catch (e) {
+      console.error(e);
+      setStatus("OCR failed. You can paste the statement text instead.");
+      setMode("paste");
+    }
+  }
+
+  function handleFile(file) {
+    if (!file || !file.type.startsWith("image/")) return;
+    runOCR(file);
+  }
+
+  function handlePasteParse() {
+    const items = parseChargesFromText(rawText);
+    setParsed(items);
+    setStatus(items.length ? "" : "No dollar-amount lines found — try adjusting the pasted text or add items manually.");
+  }
+
+  function updateParsed(id, patch) {
+    setParsed((prev) => prev.map((it) => (it.id === id ? { ...it, ...patch } : it)));
+  }
+  function removeParsed(id) {
+    setParsed((prev) => prev.filter((it) => it.id !== id));
+  }
+
+  function commit() {
+    onAddItems(parsed);
+    setParsed(null);
+    setRawText("");
+    setStatus("Added to this month's statement.");
+    setTimeout(() => setStatus(""), 2500);
+  }
+
+  return (
+    <div className="card" style={{ padding: 18 }}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", padding: 0 }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ color: "var(--md-primary)" }}>{Icon.upload({})}</span>
+          <span className="gsans" style={{ fontSize: 15.5, fontWeight: 500 }}>Import from resident portal screenshot</span>
+        </div>
+        <span style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }}>{Icon.chevDown({})}</span>
+      </button>
+
+      {open && (
+        <div className="fade-in" style={{ marginTop: 16 }}>
+          <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+            <button className={"btn " + (mode === "image" ? "btn-tonal" : "btn-outline")} onClick={() => setMode("image")}>Upload screenshot</button>
+            <button className={"btn " + (mode === "paste" ? "btn-tonal" : "btn-outline")} onClick={() => setMode("paste")}>Paste statement text</button>
+          </div>
+
+          {mode === "image" && (
+            <div
+              className={"dropzone" + (drag ? " drag" : "")}
+              onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+              onDragLeave={() => setDrag(false)}
+              onDrop={(e) => { e.preventDefault(); setDrag(false); handleFile(e.dataTransfer.files[0]); }}
+              onPaste={(e) => {
+                const item = Array.from(e.clipboardData.items).find((i) => i.type.startsWith("image/"));
+                if (item) handleFile(item.getAsFile());
+              }}
+              tabIndex={0}
+            >
+              <div style={{ color: "var(--md-text-secondary)", marginBottom: 10 }}>{Icon.upload({ style: { display: "inline-block" } })}</div>
+              <div style={{ fontSize: 14, color: "var(--md-text-secondary)", marginBottom: 10 }}>
+                Drag a screenshot here, paste it (⌘/Ctrl+V), or choose a file. Runs OCR locally in your browser.
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => handleFile(e.target.files[0])}
+              />
+              <button className="btn btn-outline" onClick={() => fileInputRef.current.click()}>Choose file</button>
+              {status && (
+                <div style={{ marginTop: 12, fontSize: 13, color: "var(--md-text-secondary)" }}>
+                  {status}{progress > 0 && progress < 100 ? " " + progress + "%" : ""}
+                  {progress > 0 && progress < 100 && (
+                    <div className="progress-line" style={{ marginTop: 6 }}><div style={{ width: progress + "%" }}></div></div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {mode === "paste" && (
+            <div>
+              <textarea
+                className="notes"
+                placeholder={"Paste the billing summary text here, e.g.\nBase Rent   $5,801.00\nTrash Rebill - Door to Door   $25.00"}
+                value={rawText}
+                onChange={(e) => setRawText(e.target.value)}
+                style={{ minHeight: 120 }}
+              />
+              <div style={{ marginTop: 10 }}>
+                <button className="btn btn-tonal" onClick={handlePasteParse}>Parse charges</button>
+              </div>
+              {status && <div style={{ marginTop: 10, fontSize: 13, color: "var(--md-text-secondary)" }}>{status}</div>}
+            </div>
+          )}
+
+          {parsed && parsed.length > 0 && (
+            <div className="fade-in" style={{ marginTop: 18 }}>
+              <div style={{ fontSize: 13, color: "var(--md-text-secondary)", marginBottom: 8 }}>
+                Detected {parsed.length} line item{parsed.length !== 1 ? "s" : ""} — review and fix categories before adding.
+              </div>
+              <div style={{ border: "1px solid var(--md-outline-soft)", borderRadius: 12, overflow: "hidden" }}>
+                <table>
+                  <tbody>
+                    {parsed.map((it) => (
+                      <tr key={it.id}>
+                        <td style={{ width: "42%" }}>
+                          <input className="cell" value={it.name} onChange={(e) => updateParsed(it.id, { name: e.target.value })} />
+                        </td>
+                        <td style={{ width: "22%" }}>
+                          <input
+                            className="cell mono"
+                            value={it.amount}
+                            onChange={(e) => updateParsed(it.id, { amount: parseFloat(e.target.value) || 0 })}
+                            style={{ textAlign: "right" }}
+                          />
+                        </td>
+                        <td style={{ width: "26%" }}>
+                          <select className="cell select" value={it.category} onChange={(e) => updateParsed(it.id, { category: e.target.value, splitPlato: CATEGORY_META[e.target.value].defaultSplit })}>
+                            <option value="rent">Base Rent (51.5/48.5)</option>
+                            <option value="utility">Utility (50/50)</option>
+                            <option value="other">Other (50/50)</option>
+                          </select>
+                        </td>
+                        <td style={{ width: "10%", textAlign: "right" }}>
+                          <IconBtn title="Remove" onClick={() => removeParsed(it.id)}>{Icon.trash({})}</IconBtn>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ marginTop: 14, display: "flex", gap: 10 }}>
+                <button className="btn btn-filled" onClick={commit}>Add {parsed.length} item{parsed.length !== 1 ? "s" : ""} to this month</button>
+                <button className="btn btn-outline" onClick={() => setParsed(null)}>Discard</button>
+              </div>
+            </div>
+          )}
+
+          {rawText && mode === "image" && (
+            <details style={{ marginTop: 14 }}>
+              <summary style={{ fontSize: 12.5, color: "var(--md-text-secondary)", cursor: "pointer" }}>View raw OCR text</summary>
+              <pre className="mono" style={{ fontSize: 11.5, whiteSpace: "pre-wrap", background: "var(--md-surface-alt)", padding: 10, borderRadius: 8, marginTop: 8 }}>{rawText}</pre>
+            </details>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------------- Line item row ---------------- */
+function LineItemRow({ item, onChange, onRemove }) {
+  const platoAmt = (item.amount * item.splitPlato) / 100;
+  const zongAmt = item.amount - platoAmt;
+  return (
+    <tr>
+      <td style={{ width: "30%" }}>
+        <input className="cell" value={item.name} onChange={(e) => onChange({ name: e.target.value })} />
+      </td>
+      <td style={{ width: "16%" }}>
+        <select
+          className="cell select"
+          value={item.category}
+          onChange={(e) => onChange({ category: e.target.value, splitPlato: CATEGORY_META[e.target.value].defaultSplit })}
+        >
+          <option value="rent">Base Rent</option>
+          <option value="utility">Utility</option>
+          <option value="other">Other</option>
+        </select>
+      </td>
+      <td style={{ width: "14%" }}>
+        <input
+          className="cell mono"
+          value={item.amount}
+          onChange={(e) => onChange({ amount: parseFloat(e.target.value) })}
+          style={{ textAlign: "right" }}
+        />
+      </td>
+      <td style={{ width: "16%" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <input
+            className="cell mono"
+            value={item.splitPlato}
+            onChange={(e) => onChange({ splitPlato: Math.min(100, Math.max(0, parseFloat(e.target.value) || 0)) })}
+            style={{ textAlign: "right", width: 52 }}
+          />
+          <span style={{ fontSize: 12, color: "var(--md-text-secondary)" }}>% P</span>
+        </div>
+      </td>
+      <td style={{ width: "12%", textAlign: "right" }} className="mono">
+        <span style={{ color: "var(--md-plato)" }}>{fmt(platoAmt)}</span>
+      </td>
+      <td style={{ width: "12%", textAlign: "right" }} className="mono">
+        <span style={{ color: "var(--md-zong)" }}>{fmt(zongAmt)}</span>
+      </td>
+      <td style={{ width: "4%", textAlign: "right" }}>
+        <IconBtn title="Remove line item" onClick={onRemove}>{Icon.trash({})}</IconBtn>
+      </td>
+    </tr>
+  );
+}
+
+/* ---------------- Month view ---------------- */
+function MonthView({ month, onUpdateMonth, roommates }) {
+  const items = month.lineItems;
+
+  const totals = useMemo(() => {
+    let total = 0, plato = 0, zong = 0;
+    const byCategory = { rent: 0, utility: 0, other: 0 };
+    items.forEach((it) => {
+      const p = (it.amount * it.splitPlato) / 100;
+      const z = it.amount - p;
+      total += it.amount; plato += p; zong += z;
+      byCategory[it.category] += it.amount;
+    });
+    return { total, plato, zong, byCategory };
+  }, [items]);
+
+  function updateItem(id, patch) {
+    onUpdateMonth({ ...month, lineItems: month.lineItems.map((it) => (it.id === id ? { ...it, ...patch } : it)) });
+  }
+  function removeItem(id) {
+    onUpdateMonth({ ...month, lineItems: month.lineItems.filter((it) => it.id !== id) });
+  }
+  function addItem() {
+    onUpdateMonth({
+      ...month,
+      lineItems: [...month.lineItems, { id: uid(), name: "New charge", amount: 0, category: "other", splitPlato: OTHER_SPLIT_PLATO }],
+    });
+  }
+  function addParsedItems(newItems) {
+    onUpdateMonth({ ...month, lineItems: [...month.lineItems, ...newItems] });
+  }
+  function setNotes(notes) {
+    onUpdateMonth({ ...month, notes });
+  }
+  function togglePaid(who) {
+    onUpdateMonth({ ...month, paid: { ...month.paid, [who]: !month.paid[who] } });
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      <ImportPanel onAddItems={addParsedItems} />
+
+      <div className="card" style={{ padding: 18 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, flexWrap: "wrap", gap: 10 }}>
+          <h2 className="gsans" style={{ fontSize: 17, margin: 0, fontWeight: 500 }}>Line items</h2>
+          <button className="btn btn-text" onClick={addItem} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {Icon.plus({})} Add line item
+          </button>
+        </div>
+        <div style={{ overflowX: "auto" }}>
+          <table>
+            <thead>
+              <tr style={{ fontSize: 12, color: "var(--md-text-secondary)", textAlign: "left" }}>
+                <th style={{ textAlign: "left" }}>Charge</th>
+                <th style={{ textAlign: "left" }}>Category</th>
+                <th style={{ textAlign: "right" }}>Amount</th>
+                <th style={{ textAlign: "left" }}>Split</th>
+                <th style={{ textAlign: "right" }}>{roommates.plato}</th>
+                <th style={{ textAlign: "right" }}>{roommates.zong}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((it) => (
+                <LineItemRow key={it.id} item={it} onChange={(patch) => updateItem(it.id, patch)} onRemove={() => removeItem(it.id)} />
+              ))}
+              {items.length === 0 && (
+                <tr><td colSpan="7" style={{ textAlign: "center", padding: 24, color: "var(--md-text-secondary)", fontSize: 13.5 }}>
+                  No charges yet — import a screenshot above or add a line item.
+                </td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="two-col" style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 18 }}>
+        <div className="card" style={{ padding: 20 }}>
+          <h2 className="gsans" style={{ fontSize: 17, margin: "0 0 14px", fontWeight: 500 }}>Amount owed this month</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            {["plato", "zong"].map((who) => (
+              <div key={who} style={{
+                borderRadius: 14, padding: "16px 18px",
+                background: who === "plato" ? "var(--md-plato-container)" : "var(--md-zong-container)",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 500, color: who === "plato" ? "var(--md-plato)" : "var(--md-zong)" }}>
+                    {roommates[who]}
+                  </span>
+                  <Toggle on={month.paid[who]} onClick={() => togglePaid(who)} label={roommates[who] + " paid"} />
+                </div>
+                <div className="gsans" style={{ fontSize: 26, fontWeight: 500 }}>{fmt(totals[who])}</div>
+                <div style={{ fontSize: 12, marginTop: 4, color: month.paid[who] ? "var(--md-success)" : "var(--md-warn)", fontWeight: 500 }}>
+                  {month.paid[who] ? "Paid" : "Pending"}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--md-outline-soft)", display: "flex", justifyContent: "space-between", fontSize: 14 }}>
+            <span style={{ color: "var(--md-text-secondary)" }}>Statement total</span>
+            <span className="mono" style={{ fontWeight: 500 }}>{fmt(totals.total)}</span>
+          </div>
+        </div>
+
+        <div className="card" style={{ padding: 20 }}>
+          <h2 className="gsans" style={{ fontSize: 17, margin: "0 0 14px", fontWeight: 500 }}>Category breakdown</h2>
+          {Object.keys(CATEGORY_META).map((cat) => (
+            <div key={cat} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0" }}>
+              <CategoryChip category={cat} />
+              <span className="mono" style={{ fontSize: 14 }}>{fmt(totals.byCategory[cat])}</span>
+            </div>
+          ))}
+          <div style={{ marginTop: 10, paddingTop: 12, borderTop: "1px solid var(--md-outline-soft)", fontSize: 12.5, color: "var(--md-text-secondary)", lineHeight: 1.6 }}>
+            Base rent splits 51.5 / 48.5 · Utilities &amp; other split 50 / 50 by default — override any row's split % directly in the table.
+          </div>
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: 20 }}>
+        <h2 className="gsans" style={{ fontSize: 17, margin: "0 0 10px", fontWeight: 500 }}>Notes</h2>
+        <textarea
+          className="notes"
+          placeholder="Add context for this month — e.g. “Electricity was higher because of the AC.”"
+          value={month.notes}
+          onChange={(e) => setNotes(e.target.value)}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Sidebar: historical ledger ---------------- */
+function Sidebar({ months, activeId, onSelect, onAddMonth, roommates }) {
+  const sortedIds = Object.keys(months).sort().reverse();
+  return (
+    <div className="sidebar" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div className="card" style={{ padding: 18 }}>
+        <a href={PORTAL_URL} target="_blank" rel="noopener noreferrer" className="btn btn-filled"
+           style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", textDecoration: "none" }}>
+          {Icon.link({})} Rowe at Pear Village Portal
+        </a>
+        <div style={{ fontSize: 12, color: "var(--md-text-secondary)", marginTop: 8, textAlign: "center" }}>
+          Opens the resident portal to pay rent directly.
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: 18 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <h2 className="gsans" style={{ fontSize: 15.5, margin: 0, fontWeight: 500 }}>Statement history</h2>
+          <IconBtn title="Add a month" onClick={onAddMonth}>{Icon.plus({})}</IconBtn>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 480, overflowY: "auto" }}>
+          {sortedIds.map((id) => {
+            const m = months[id];
+            const total = m.lineItems.reduce((s, it) => s + it.amount, 0);
+            const bothPaid = m.paid.plato && m.paid.zong;
+            return (
+              <button
+                key={id}
+                onClick={() => onSelect(id)}
+                className="month-tab"
+                style={{
+                  display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4,
+                  width: "100%", textAlign: "left", background: id === activeId ? "var(--md-primary-container)" : "transparent",
+                  color: id === activeId ? "var(--md-on-primary-container)" : "var(--md-text)",
+                }}
+              >
+                <div style={{ display: "flex", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontWeight: 500 }}>{monthLabel(id)}</span>
+                  <span className="chip" style={{
+                    background: bothPaid ? "var(--md-success-container)" : "var(--md-warn-container)",
+                    color: bothPaid ? "var(--md-success)" : "var(--md-warn)", fontSize: 11,
+                  }}>
+                    {bothPaid ? "Settled" : "Open"}
+                  </span>
+                </div>
+                <span className="mono" style={{ fontSize: 12.5, color: "var(--md-text-secondary)" }}>{fmt(total)} total</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- App root ---------------- */
+function App() {
+  const [state, setState] = useState(loadState);
+  const [activeId, setActiveId] = useState(() => {
+    const ids = Object.keys(state.months).sort();
+    return ids[ids.length - 1] || todayMonthId();
+  });
+
+  useEffect(() => { saveState(state); }, [state]);
+
+  function updateMonth(updated) {
+    setState((s) => ({ ...s, months: { ...s.months, [updated.id]: updated } }));
+  }
+
+  function addMonth() {
+    const ids = Object.keys(state.months).sort();
+    const latest = ids[ids.length - 1] || todayMonthId();
+    let next = shiftMonthId(latest, 1);
+    while (state.months[next]) next = shiftMonthId(next, 1);
+    const newMonth = { id: next, lineItems: [], notes: "", paid: { plato: false, zong: false } };
+    setState((s) => ({ ...s, months: { ...s.months, [next]: newMonth } }));
+    setActiveId(next);
+  }
+
+  const month = state.months[activeId];
+
+  return (
+    <div style={{ minHeight: "100vh" }}>
+      <header style={{ background: "var(--md-surface)", borderBottom: "1px solid var(--md-outline-soft)", position: "sticky", top: 0, zIndex: 10 }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto", padding: "18px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <h1 className="gsans" style={{ fontSize: 20, margin: 0, fontWeight: 700, color: "var(--md-text)" }}>Rowe Split</h1>
+            <div style={{ fontSize: 13, color: "var(--md-text-secondary)", marginTop: 2 }}>Rent &amp; utilities ledger — {state.roommates.plato} &amp; {state.roommates.zong}</div>
+          </div>
+          {month && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <button className="icon-btn" title="Previous month" onClick={() => setActiveId((id) => (state.months[shiftMonthId(id, -1)] ? shiftMonthId(id, -1) : id))}>‹</button>
+              <div className="month-tab active" style={{ cursor: "default" }}>{monthLabel(activeId)}</div>
+              <button className="icon-btn" title="Next month" onClick={() => setActiveId((id) => (state.months[shiftMonthId(id, 1)] ? shiftMonthId(id, 1) : id))}>›</button>
+            </div>
+          )}
+        </div>
+      </header>
+
+      <main style={{ maxWidth: 1180, margin: "0 auto", padding: "24px", display: "grid", gridTemplateColumns: "1fr 300px", gap: 24 }} className="two-col">
+        <div>
+          {month ? (
+            <MonthView month={month} onUpdateMonth={updateMonth} roommates={state.roommates} />
+          ) : (
+            <div className="card" style={{ padding: 40, textAlign: "center", color: "var(--md-text-secondary)" }}>
+              No statement for this month yet.
+            </div>
+          )}
+        </div>
+        <Sidebar months={state.months} activeId={activeId} onSelect={setActiveId} onAddMonth={addMonth} roommates={state.roommates} />
+      </main>
+
+      <footer style={{ textAlign: "center", padding: "20px 24px 40px", fontSize: 12, color: "var(--md-text-secondary)" }}>
+        Data is stored locally in this browser only. Nothing is uploaded to a server.
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
