@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Rowe Split — Rent &amp; Utilities Ledger</title>
 
 <!-- Apple / iOS Specific Meta -->
@@ -840,9 +840,295 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* Responsive Desktop vs Mobile Helpers */
+  .desktop-only { display: block; }
+  .mobile-only { display: none; }
+
+  /* Mobile Charge Cards */
+  .charges-mobile-list {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .charge-card-mobile {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+
+  .charge-card-row1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .mobile-title-input {
+    font-weight: 500;
+    font-size: 14.5px !important;
+    background: var(--bg-page);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 7px 10px;
+    width: 100%;
+  }
+
+  .charge-card-row2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .charge-card-row3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-subtle);
+  }
+
+  .share-pill {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .share-pill.plato-pill {
+    background: var(--google-blue-container);
+    color: var(--google-blue-dark);
+  }
+
+  .share-pill.zong-pill {
+    background: var(--google-purple-container);
+    color: var(--google-purple);
+  }
+
+  /* Comprehensive Mobile Responsive Layout */
   @media (max-width: 768px) {
-    .shares-grid, .comments-grid { grid-template-columns: 1fr; }
-    .drop-paste-zone { flex-direction: column; align-items: flex-start; }
+    /* Prevent iOS Safari 125% auto-zoom on input focus */
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+
+    body {
+      padding-bottom: 60px;
+    }
+
+    .container {
+      padding: 0 14px;
+    }
+
+    .card {
+      padding: 16px 14px;
+      border-radius: 14px;
+    }
+
+    /* Minimalist Adaptive Header (No overlaps) */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      height: auto;
+      padding: 10px 0 12px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    .brand {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .brand-sub {
+      display: none; /* Hide subtitle on mobile to keep header clean */
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .header-actions .btn {
+      flex: 1 1 auto;
+      font-size: 12px;
+      padding: 6px 10px;
+      justify-content: center;
+    }
+
+    .header-actions .portal-link {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    /* Read-Only Banner */
+    .readonly-banner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+    }
+
+    /* Graph Section */
+    .graph-card {
+      margin-top: 12px;
+    }
+
+    .graph-top-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .graph-heading {
+      font-size: 14.5px;
+    }
+
+    .graph-legend {
+      gap: 12px;
+    }
+
+    .chart-scroll {
+      -webkit-overflow-scrolling: touch;
+      padding-top: 10px;
+    }
+
+    .chart-track-grid {
+      min-width: 720px;
+      height: 190px;
+      padding: 20px 4px 6px;
+    }
+
+    .chart-col {
+      min-width: 52px;
+      padding: 6px 2px 4px;
+    }
+
+    /* Month Header Controls */
+    .workspace {
+      margin-top: 16px;
+    }
+
+    .month-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .month-title-group {
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .month-title {
+      font-size: 20px;
+    }
+
+    .month-controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 8px;
+    }
+
+    /* Shares Grid */
+    .shares-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .share-card {
+      padding: 14px 16px;
+    }
+
+    .share-val {
+      font-size: 24px;
+    }
+
+    /* Drop Zone */
+    .drop-paste-zone {
+      padding: 14px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .drop-zone-left {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+    }
+
+    .drop-text-main {
+      font-size: 13px;
+    }
+
+    .drop-paste-zone .btn {
+      width: 100%;
+    }
+
+    /* Comments Section */
+    .comments-section {
+      margin-top: 16px;
+    }
+
+    .comments-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .comment-card {
+      padding: 14px;
+    }
+
+    /* Toast */
+    .toast {
+      left: 14px;
+      right: 14px;
+      bottom: 16px;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* Modal */
+    .modal-box {
+      padding: 20px 16px;
+      border-radius: 16px;
+      gap: 12px;
+    }
+
+    .modal-box .btn {
+      padding: 7px 12px;
+      font-size: 12.5px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .desktop-only { display: none !important; }
+    .mobile-only { display: flex !important; }
   }
 </style>
 </head>
@@ -1043,9 +1329,16 @@ function doPost(e) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var dataSheet = ss.getSheetByName("LedgerData");
     if (!dataSheet) dataSheet = ss.insertSheet("LedgerData");
-    var payload = e.postData.contents;
-    dataSheet.getRange("A1").setValue(payload);
-    updateSummarySheet(ss, JSON.parse(payload));
+    var payload = "";
+    if (e && e.postData && e.postData.contents) {
+      payload = e.postData.contents;
+    } else if (e && e.parameter && e.parameter.data) {
+      payload = e.parameter.data;
+    }
+    if (payload) {
+      dataSheet.getRange("A1").setValue(payload);
+      updateSummarySheet(ss, JSON.parse(payload));
+    }
     return ContentService.createTextOutput(JSON.stringify({ status: "success" })).setMimeType(ContentService.MimeType.JSON);
   } catch(err) {
     return ContentService.createTextOutput(JSON.stringify({ error: err.toString() })).setMimeType(ContentService.MimeType.JSON);
@@ -1109,12 +1402,58 @@ function App() {
     setTimeout(() => setToast(""), duration);
   };
 
-  /* Save Sync URL */
+  /* Save Sync URL and auto-update browser address bar */
   useEffect(() => {
     if (sheetSyncUrl) {
       localStorage.setItem("rowe_sheet_sync_url", sheetSyncUrl);
     }
-  }, [sheetSyncUrl]);
+    // Auto-update browser address bar so copying the URL directly always works
+    try {
+      const url = new URL(window.location.href);
+      if (sheetSyncUrl) {
+        url.searchParams.set("sheet", sheetSyncUrl);
+      } else {
+        url.searchParams.delete("sheet");
+      }
+      if (isReadOnly) {
+        url.searchParams.set("mode", "view");
+      } else {
+        url.searchParams.delete("mode");
+      }
+      window.history.replaceState(null, "", url.toString());
+    } catch (e) {
+      console.warn("Could not update URL history:", e);
+    }
+  }, [sheetSyncUrl, isReadOnly]);
+
+  /* Helper to push updates to Google Sheet (debounced for typing) */
+  const syncTimerRef = useRef(null);
+  const syncToGoogleSheet = (nextState, immediate = false) => {
+    if (!sheetSyncUrl || isReadOnly) return;
+    if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+    setIsSyncing(true);
+    const perform = () => {
+      fetch(sheetSyncUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(nextState),
+      })
+        .then(() => {
+          setIsSyncing(false);
+          showToast("Saved to Google Sheet ✓");
+        })
+        .catch((err) => {
+          setIsSyncing(false);
+          console.warn("Could not post to Google Sheet:", err);
+        });
+    };
+    if (immediate) {
+      perform();
+    } else {
+      syncTimerRef.current = setTimeout(perform, 600);
+    }
+  };
 
   /* Fetch live state from Google Sheet on mount if configured */
   useEffect(() => {
@@ -1135,35 +1474,24 @@ function App() {
       });
   }, [sheetSyncUrl]);
 
-  /* Helper to push updates to Google Sheet */
-  const syncToGoogleSheet = (nextState) => {
-    if (!sheetSyncUrl || isReadOnly) return;
-    setIsSyncing(true);
-    fetch(sheetSyncUrl, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(nextState),
-    })
-      .then(() => {
-        setIsSyncing(false);
-        showToast("Saved to Google Sheet ✓");
-      })
-      .catch((err) => {
-        setIsSyncing(false);
-        console.warn("Could not post to Google Sheet:", err);
-      });
+  /* Share Link Generators */
+  const copyRoommateLink = () => {
+    const url = new URL(window.location.origin + window.location.pathname);
+    if (sheetSyncUrl) {
+      url.searchParams.set("sheet", sheetSyncUrl);
+    }
+    navigator.clipboard.writeText(url.toString());
+    showToast("Link for Zong copied! He can edit and sync with the Google Sheet ✓");
   };
 
-  /* Share Link Generator (View-Only / Non-Editing) */
-  const copyShareLink = () => {
+  const copyViewOnlyLink = () => {
     const url = new URL(window.location.origin + window.location.pathname);
     url.searchParams.set("mode", "view");
     if (sheetSyncUrl) {
       url.searchParams.set("sheet", sheetSyncUrl);
     }
     navigator.clipboard.writeText(url.toString());
-    showToast("View-only link copied! Anyone opening this link has non-editing access.");
+    showToast("View-only link copied! Editing is disabled for this link ✓");
   };
 
   const activeMonth = state.months[activeId] || {
@@ -1203,7 +1531,7 @@ function App() {
   }, [state.months]);
 
   /* State mutators (with auto-sync to Google Sheet) */
-  const updateActive = (patch) => {
+  const updateActive = (patch, immediate = false) => {
     if (isReadOnly) {
       showToast("View-only mode is active. Unlock to make edits.");
       return;
@@ -1214,7 +1542,7 @@ function App() {
     };
     const nextState = { ...state, months: nextMonths };
     setState(nextState);
-    syncToGoogleSheet(nextState);
+    syncToGoogleSheet(nextState, immediate);
   };
 
   const togglePaid = (who) => {
@@ -1222,12 +1550,15 @@ function App() {
       showToast("View-only mode is active. Unlock to change payment status.");
       return;
     }
-    updateActive({
-      paid: {
-        ...activeMonth.paid,
-        [who]: !activeMonth.paid[who],
+    updateActive(
+      {
+        paid: {
+          ...activeMonth.paid,
+          [who]: !activeMonth.paid[who],
+        },
       },
-    });
+      true
+    );
   };
 
   /* Overall Master Toggle for the Month */
@@ -1238,9 +1569,12 @@ function App() {
     }
     const bothPaid = Boolean(activeMonth.paid?.plato && activeMonth.paid?.zong);
     const target = !bothPaid;
-    updateActive({
-      paid: { plato: target, zong: target },
-    });
+    updateActive(
+      {
+        paid: { plato: target, zong: target },
+      },
+      true
+    );
     showToast(target ? `Marked ${monthShort(activeId)} as Paid` : `Marked ${monthShort(activeId)} as Unpaid`);
   };
 
@@ -1253,19 +1587,19 @@ function App() {
       category: "other",
       splitPlato: OTHER_SPLIT_PLATO,
     };
-    updateActive({ lineItems: [...activeMonth.lineItems, newItem] });
+    updateActive({ lineItems: [...activeMonth.lineItems, newItem] }, true);
   };
 
   const updateLine = (id, patch) => {
     if (isReadOnly) return;
     const next = activeMonth.lineItems.map((it) => (it.id === id ? { ...it, ...patch } : it));
-    updateActive({ lineItems: next });
+    updateActive({ lineItems: next }, false);
   };
 
   const removeLine = (id) => {
     if (isReadOnly) return;
     const next = activeMonth.lineItems.filter((it) => it.id !== id);
-    updateActive({ lineItems: next });
+    updateActive({ lineItems: next }, true);
   };
 
   const populateStandard = () => {
@@ -1276,7 +1610,7 @@ function App() {
       { id: uid(), name: "Garage Income", amount: 75.00, category: "garage", splitPlato: GARAGE_SPLIT_PLATO },
       { id: uid(), name: "Trash Rebill - Door to Door", amount: 25.00, category: "utility", splitPlato: UTILITY_SPLIT_PLATO },
     ];
-    updateActive({ lineItems: std });
+    updateActive({ lineItems: std }, true);
     showToast("Standard rent charges loaded for " + monthShort(activeId));
   };
 
@@ -1292,7 +1626,7 @@ function App() {
       const { data } = await Tesseract.recognize(file, "eng");
       const items = parseStatementLines(data.text);
       if (items.length > 0) {
-        updateActive({ lineItems: [...activeMonth.lineItems, ...items] });
+        updateActive({ lineItems: [...activeMonth.lineItems, ...items] }, true);
         showToast(`Added ${items.length} items to ${monthShort(activeId)} statement!`);
       } else {
         showToast("No dollar amounts detected. Try pasting standard text instead.");
@@ -1337,7 +1671,7 @@ function App() {
             </span>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div className="header-actions">
             {/* Google Sheets Sync Indicator */}
             <button
               className={"btn btn-sm " + (sheetSyncUrl ? "btn-tonal" : "btn-outline")}
@@ -1360,11 +1694,20 @@ function App() {
               {isReadOnly ? "🔒 View-Only" : "✏️ Edit Mode"}
             </button>
 
-            {/* Share View-Only Link */}
+            {/* Share with Zong (Can Edit & Sync) */}
             <button
               className="btn btn-outline btn-sm"
-              onClick={copyShareLink}
-              title="Copy shareable link with non-editing (view-only) access"
+              onClick={copyRoommateLink}
+              title="Copy synced link for Zong with full editing access"
+            >
+              Share with Zong
+            </button>
+
+            {/* Share View-Only Link (Locked / Non-Editing) */}
+            <button
+              className="btn btn-outline btn-sm"
+              onClick={copyViewOnlyLink}
+              title="Copy view-only link for family (non-editing access)"
             >
               Share (View-Only)
             </button>
@@ -1478,7 +1821,7 @@ function App() {
               </span>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <div className="month-controls-row">
               {/* Overall "Mark as Paid" Toggle Switch */}
               <label
                 className={"mark-paid-master-toggle" + (activeTotals.isPaid ? " is-paid" : "")}
@@ -1640,40 +1983,143 @@ function App() {
                 )}
               </div>
             ) : (
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th style={{ width: "36%" }}>Charge Description</th>
-                      <th style={{ width: "20%" }}>Category</th>
-                      <th style={{ width: "16%", textAlign: "right" }}>Amount</th>
-                      <th style={{ width: "13%", textAlign: "right" }}>{state.roommates.plato} ($)</th>
-                      <th style={{ width: "13%", textAlign: "right" }}>{state.roommates.zong} ($)</th>
-                      {!isReadOnly && <th style={{ width: "2%" }}></th>}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activeMonth.lineItems.map((item) => {
-                      const platoAmt = (item.amount * item.splitPlato) / 100;
-                      const zongAmt = item.amount - platoAmt;
+              <>
+                {/* Desktop Spreadsheet Table View */}
+                <div className="table-wrap desktop-only">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style={{ width: "36%" }}>Charge Description</th>
+                        <th style={{ width: "20%" }}>Category</th>
+                        <th style={{ width: "16%", textAlign: "right" }}>Amount</th>
+                        <th style={{ width: "13%", textAlign: "right" }}>{state.roommates.plato} ($)</th>
+                        <th style={{ width: "13%", textAlign: "right" }}>{state.roommates.zong} ($)</th>
+                        {!isReadOnly && <th style={{ width: "2%" }}></th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {activeMonth.lineItems.map((item) => {
+                        const platoAmt = (item.amount * item.splitPlato) / 100;
+                        const zongAmt = item.amount - platoAmt;
 
-                      return (
-                        <tr key={item.id}>
-                          <td>
-                            {!isReadOnly ? (
-                              <input
-                                className="cell-input"
-                                value={item.name}
-                                onChange={(e) => updateLine(item.id, { name: e.target.value })}
-                              />
-                            ) : (
-                              <span style={{ fontWeight: 500 }}>{item.name}</span>
+                        return (
+                          <tr key={item.id}>
+                            <td>
+                              {!isReadOnly ? (
+                                <input
+                                  className="cell-input"
+                                  value={item.name}
+                                  onChange={(e) => updateLine(item.id, { name: e.target.value })}
+                                />
+                              ) : (
+                                <span style={{ fontWeight: 500 }}>{item.name}</span>
+                              )}
+                            </td>
+                            <td>
+                              {!isReadOnly ? (
+                                <select
+                                  className="cell-select"
+                                  value={item.category}
+                                  onChange={(e) => {
+                                    const cat = e.target.value;
+                                    updateLine(item.id, {
+                                      category: cat,
+                                      splitPlato: CATEGORIES[cat]?.defaultSplit ?? 50.0,
+                                    });
+                                  }}
+                                >
+                                  <option value="rent">Base Rent (51.5 / 48.5)</option>
+                                  <option value="utility">Utility (50 / 50)</option>
+                                  <option value="garage">Garage (50 / 50)</option>
+                                  <option value="other">Other (50 / 50)</option>
+                                  <option value="plato_only">{state.roommates.plato} 100% (100 / 0)</option>
+                                  <option value="zong_only">{state.roommates.zong} 100% (0 / 100)</option>
+                                </select>
+                              ) : (
+                                <span className="cat-badge">
+                                  {item.category === "plato_only"
+                                    ? `${state.roommates.plato} 100%`
+                                    : item.category === "zong_only"
+                                    ? `${state.roommates.zong} 100%`
+                                    : (CATEGORIES[item.category]?.label || item.category)}
+                                </span>
+                              )}
+                            </td>
+                            <td style={{ textAlign: "right" }}>
+                              {!isReadOnly ? (
+                                <input
+                                  className="cell-input mono"
+                                  style={{ textAlign: "right" }}
+                                  type="number"
+                                  step="0.01"
+                                  value={item.amount}
+                                  onChange={(e) => updateLine(item.id, { amount: parseFloat(e.target.value) || 0 })}
+                                />
+                              ) : (
+                                <span className="mono" style={{ fontWeight: 600 }}>{fmt(item.amount)}</span>
+                              )}
+                            </td>
+                            <td style={{ textAlign: "right" }} className="mono">
+                              <span style={{ color: "var(--google-blue)", fontWeight: 500 }}>{fmt(platoAmt)}</span>
+                            </td>
+                            <td style={{ textAlign: "right" }} className="mono">
+                              <span style={{ color: "var(--google-purple)", fontWeight: 500 }}>{fmt(zongAmt)}</span>
+                            </td>
+                            {!isReadOnly && (
+                              <td style={{ textAlign: "center" }}>
+                                <button
+                                  className="icon-btn"
+                                  onClick={() => removeLine(item.id)}
+                                  title="Delete row"
+                                >
+                                  ✕
+                                </button>
+                              </td>
                             )}
-                          </td>
-                          <td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Responsive Cards View */}
+                <div className="mobile-only charges-mobile-list">
+                  {activeMonth.lineItems.map((item) => {
+                    const platoAmt = (item.amount * item.splitPlato) / 100;
+                    const zongAmt = item.amount - platoAmt;
+
+                    return (
+                      <div className="charge-card-mobile" key={item.id}>
+                        <div className="charge-card-row1">
+                          {!isReadOnly ? (
+                            <input
+                              className="cell-input mobile-title-input"
+                              placeholder="Charge Description"
+                              value={item.name}
+                              onChange={(e) => updateLine(item.id, { name: e.target.value })}
+                            />
+                          ) : (
+                            <span style={{ fontWeight: 600, fontSize: "14.5px" }}>{item.name}</span>
+                          )}
+                          {!isReadOnly && (
+                            <button
+                              className="icon-btn"
+                              onClick={() => removeLine(item.id)}
+                              title="Delete row"
+                              style={{ padding: "4px 8px", fontSize: "15px" }}
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="charge-card-row2">
+                          <div style={{ flex: 1 }}>
                             {!isReadOnly ? (
                               <select
                                 className="cell-select"
+                                style={{ width: "100%", padding: "6px 8px" }}
                                 value={item.category}
                                 onChange={(e) => {
                                   const cat = e.target.value;
@@ -1687,8 +2133,8 @@ function App() {
                                 <option value="utility">Utility (50 / 50)</option>
                                 <option value="garage">Garage (50 / 50)</option>
                                 <option value="other">Other (50 / 50)</option>
-                                <option value="plato_only">{state.roommates.plato} 100% (100 / 0)</option>
-                                <option value="zong_only">{state.roommates.zong} 100% (0 / 100)</option>
+                                <option value="plato_only">{state.roommates.plato} 100%</option>
+                                <option value="zong_only">{state.roommates.zong} 100%</option>
                               </select>
                             ) : (
                               <span className="cat-badge">
@@ -1699,44 +2145,40 @@ function App() {
                                   : (CATEGORIES[item.category]?.label || item.category)}
                               </span>
                             )}
-                          </td>
-                          <td style={{ textAlign: "right" }}>
+                          </div>
+
+                          <div style={{ width: "115px", textAlign: "right" }}>
                             {!isReadOnly ? (
-                              <input
-                                className="cell-input mono"
-                                style={{ textAlign: "right" }}
-                                type="number"
-                                step="0.01"
-                                value={item.amount}
-                                onChange={(e) => updateLine(item.id, { amount: parseFloat(e.target.value) || 0 })}
-                              />
+                              <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                                <span style={{ position: "absolute", left: 8, color: "var(--text-tertiary)", fontSize: 13 }}>$</span>
+                                <input
+                                  className="cell-input mono"
+                                  style={{ textAlign: "right", paddingLeft: 18, fontWeight: 600, border: "1px solid var(--border-subtle)" }}
+                                  type="number"
+                                  step="0.01"
+                                  value={item.amount}
+                                  onChange={(e) => updateLine(item.id, { amount: parseFloat(e.target.value) || 0 })}
+                                />
+                              </div>
                             ) : (
-                              <span className="mono" style={{ fontWeight: 600 }}>{fmt(item.amount)}</span>
+                              <span className="mono" style={{ fontWeight: 600, fontSize: "15px" }}>{fmt(item.amount)}</span>
                             )}
-                          </td>
-                          <td style={{ textAlign: "right" }} className="mono">
-                            <span style={{ color: "var(--google-blue)", fontWeight: 500 }}>{fmt(platoAmt)}</span>
-                          </td>
-                          <td style={{ textAlign: "right" }} className="mono">
-                            <span style={{ color: "var(--google-purple)", fontWeight: 500 }}>{fmt(zongAmt)}</span>
-                          </td>
-                          {!isReadOnly && (
-                            <td style={{ textAlign: "center" }}>
-                              <button
-                                className="icon-btn"
-                                onClick={() => removeLine(item.id)}
-                                title="Delete row"
-                              >
-                                ✕
-                              </button>
-                            </td>
-                          )}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                          </div>
+                        </div>
+
+                        <div className="charge-card-row3">
+                          <span className="share-pill plato-pill">
+                            {state.roommates.plato}: <strong>{fmt(platoAmt)}</strong>
+                          </span>
+                          <span className="share-pill zong-pill">
+                            {state.roommates.zong}: <strong>{fmt(zongAmt)}</strong>
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
 
@@ -1829,7 +2271,7 @@ function App() {
               </div>
 
               <div>
-                <strong>Step 3:</strong> Click <strong>Deploy &gt; New deployment</strong>, select <strong>Web app</strong> (click the gear icon next to 'Select type'), set <em>Who has access</em> to <strong>Anyone</strong>, click <strong>Deploy</strong>, and copy the Web App URL.
+                <strong>Step 3:</strong> Click <strong>Deploy &gt; New deployment</strong>, select <strong>Web app</strong>, ensure <em>Who has access</em> is set to <strong>Anyone</strong> (⚠️ <em>crucial so your phone and Zong can read the data!</em>), click <strong>Deploy</strong>, and copy the Web App URL.
               </div>
 
               <div style={{ marginTop: 8 }}>
@@ -1842,23 +2284,50 @@ function App() {
                   style={{ width: "100%", padding: "10px 12px", border: "1px solid var(--border)", borderRadius: "8px", fontSize: "13px" }}
                 />
               </div>
+
+              {sheetSyncUrl && (
+                <div style={{ background: "var(--surface-hover)", padding: "12px", borderRadius: "8px", marginTop: "6px" }}>
+                  <div style={{ fontWeight: 600, fontSize: "13px", marginBottom: "8px" }}>📋 Quick Share Links:</div>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <button className="btn btn-sm btn-outline" onClick={copyRoommateLink}>
+                      Copy Link for Zong (Can Edit)
+                    </button>
+                    <button className="btn btn-sm btn-outline" onClick={copyViewOnlyLink}>
+                      Copy Link for Family (View-Only)
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 10 }}>
               {sheetSyncUrl && (
-                <button
-                  className="btn btn-outline btn-sm"
-                  style={{ color: "#d93025" }}
-                  onClick={() => {
-                    setSheetSyncUrl("");
-                    setTempSheetUrl("");
-                    localStorage.removeItem("rowe_sheet_sync_url");
-                    setShowSyncModal(false);
-                    showToast("Google Sheet disconnected.");
-                  }}
-                >
-                  Disconnect
-                </button>
+                <>
+                  <button
+                    className="btn btn-outline btn-sm"
+                    style={{ color: "#d93025" }}
+                    onClick={() => {
+                      setSheetSyncUrl("");
+                      setTempSheetUrl("");
+                      localStorage.removeItem("rowe_sheet_sync_url");
+                      setShowSyncModal(false);
+                      showToast("Google Sheet disconnected.");
+                    }}
+                  >
+                    Disconnect
+                  </button>
+                  <button
+                    className="btn btn-tonal btn-sm"
+                    onClick={() => {
+                      syncToGoogleSheet(state, true);
+                      setShowSyncModal(false);
+                      showToast("Pushed current computer data to Google Sheets ✓");
+                    }}
+                    title="Upload all numbers and notes from this screen to your Google Sheet"
+                  >
+                    ⬆️ Push to Sheet
+                  </button>
+                </>
               )}
               <button className="btn btn-outline btn-sm" onClick={() => setShowSyncModal(false)}>
                 Cancel
@@ -1869,7 +2338,8 @@ function App() {
                   setSheetSyncUrl(tempSheetUrl);
                   setShowSyncModal(false);
                   if (tempSheetUrl) {
-                    showToast("Connecting and syncing with Google Sheets...");
+                    showToast("Connecting to Google Sheets...");
+                    syncToGoogleSheet(state, true);
                   }
                 }}
               >
