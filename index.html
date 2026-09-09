@@ -858,6 +858,7 @@ const { useState, useEffect, useMemo, useRef } = React;
    ========================================================================== */
 const RENT_SPLIT_PLATO = 51.5; // Base Rent: 51.5% Plato, 48.5% Zong
 const UTILITY_SPLIT_PLATO = 50.0;
+const GARAGE_SPLIT_PLATO = 50.0;
 const OTHER_SPLIT_PLATO = 50.0;
 
 const STORAGE_KEY = "rowe-split-ledger-v7";
@@ -866,7 +867,10 @@ const PORTAL_URL = "https://rowepearvillage.securecafe.com/residentservices/rowe
 const CATEGORIES = {
   rent: { label: "Base Rent", defaultSplit: RENT_SPLIT_PLATO },
   utility: { label: "Utility", defaultSplit: UTILITY_SPLIT_PLATO },
-  other: { label: "Garage / Other", defaultSplit: OTHER_SPLIT_PLATO },
+  garage: { label: "Garage", defaultSplit: GARAGE_SPLIT_PLATO },
+  other: { label: "Other", defaultSplit: OTHER_SPLIT_PLATO },
+  plato_only: { label: "Plato 100%", defaultSplit: 100.0 },
+  zong_only: { label: "Zong 100%", defaultSplit: 0.0 },
 };
 
 /* Format currency helper */
@@ -938,8 +942,8 @@ function getInitialData() {
     id: "2026-09",
     lineItems: [
       mk("Base Rent", 5801.00, "rent"),
-      mk("Garage Income", 75.00, "other"),
-      mk("Garage Income", 75.00, "other"),
+      mk("Garage Income", 75.00, "garage"),
+      mk("Garage Income", 75.00, "garage"),
       mk("High Speed Internet Access", 1.17, "utility"),
       mk("Trash Rebill - Door to Door", 25.00, "utility"),
       mk("One-Time Concession", -5354.77, "rent"),
@@ -966,6 +970,13 @@ function loadState() {
           if (!m.notesPlato && m.notes) m.notesPlato = m.notes;
           if (m.notesPlato === undefined) m.notesPlato = "";
           if (m.notesZong === undefined) m.notesZong = "";
+          if (m.lineItems) {
+            m.lineItems.forEach((it) => {
+              if (it.category === "other" && /garage/i.test(it.name)) {
+                it.category = "garage";
+              }
+            });
+          }
         });
         return parsed;
       }
@@ -1005,6 +1016,7 @@ function parseStatementLines(text) {
     const lower = label.toLowerCase();
     let cat = "other";
     if (lower.includes("rent") || lower.includes("concession")) cat = "rent";
+    else if (lower.includes("garage") || lower.includes("parking")) cat = "garage";
     else if (/(trash|internet|water|electric|sewer|gas|pest)/.test(lower)) cat = "utility";
 
     parsed.push({
@@ -1260,8 +1272,8 @@ function App() {
     if (isReadOnly) return;
     const std = [
       { id: uid(), name: "Base Rent", amount: 5801.00, category: "rent", splitPlato: RENT_SPLIT_PLATO },
-      { id: uid(), name: "Garage Income", amount: 75.00, category: "other", splitPlato: OTHER_SPLIT_PLATO },
-      { id: uid(), name: "Garage Income", amount: 75.00, category: "other", splitPlato: OTHER_SPLIT_PLATO },
+      { id: uid(), name: "Garage Income", amount: 75.00, category: "garage", splitPlato: GARAGE_SPLIT_PLATO },
+      { id: uid(), name: "Garage Income", amount: 75.00, category: "garage", splitPlato: GARAGE_SPLIT_PLATO },
       { id: uid(), name: "Trash Rebill - Door to Door", amount: 25.00, category: "utility", splitPlato: UTILITY_SPLIT_PLATO },
     ];
     updateActive({ lineItems: std });
@@ -1667,16 +1679,25 @@ function App() {
                                   const cat = e.target.value;
                                   updateLine(item.id, {
                                     category: cat,
-                                    splitPlato: CATEGORIES[cat].defaultSplit,
+                                    splitPlato: CATEGORIES[cat]?.defaultSplit ?? 50.0,
                                   });
                                 }}
                               >
                                 <option value="rent">Base Rent (51.5 / 48.5)</option>
                                 <option value="utility">Utility (50 / 50)</option>
-                                <option value="other">Garage / Other (50 / 50)</option>
+                                <option value="garage">Garage (50 / 50)</option>
+                                <option value="other">Other (50 / 50)</option>
+                                <option value="plato_only">{state.roommates.plato} 100% (100 / 0)</option>
+                                <option value="zong_only">{state.roommates.zong} 100% (0 / 100)</option>
                               </select>
                             ) : (
-                              <span className="cat-badge">{CATEGORIES[item.category]?.label || item.category}</span>
+                              <span className="cat-badge">
+                                {item.category === "plato_only"
+                                  ? `${state.roommates.plato} 100%`
+                                  : item.category === "zong_only"
+                                  ? `${state.roommates.zong} 100%`
+                                  : (CATEGORIES[item.category]?.label || item.category)}
+                              </span>
                             )}
                           </td>
                           <td style={{ textAlign: "right" }}>
